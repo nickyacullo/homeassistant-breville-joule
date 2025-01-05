@@ -12,5 +12,6 @@
     "PyJWT==2.10.1"
   ],
   "ssdp": [],
-  "zeroconf": []
+  "zeroconf": [],
+  "version": "0.0.2"
 }
