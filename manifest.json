@@ -1,0 +1,16 @@
+{
+  "domain": "breville_joule",
+  "name": "Breville Joule",
+  "codeowners": ["@xuio"],
+  "dependencies": [],
+  "documentation": "URL_TO_YOUR_DOCUMENTATION",
+  "homekit": {},
+  "iot_class": "cloud_polling",
+  "requirements": [
+    "websocket-client==1.6.1",
+    "requests==2.32.3",
+    "PyJWT==2.10.1"
+  ],
+  "ssdp": [],
+  "zeroconf": []
+}
