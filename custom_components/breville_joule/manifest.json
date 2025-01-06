@@ -3,7 +3,7 @@
   "name": "Breville Joule",
   "codeowners": ["@xuio"],
   "dependencies": [],
-  "documentation": "URL_TO_YOUR_DOCUMENTATION",
+  "documentation": "",
   "homekit": {},
   "iot_class": "cloud_polling",
   "requirements": [
@@ -13,5 +13,5 @@
   ],
   "ssdp": [],
   "zeroconf": [],
-  "version": "0.0.2"
+  "version": "0.0.3"
 }

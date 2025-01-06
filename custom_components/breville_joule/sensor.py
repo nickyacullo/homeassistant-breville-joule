@@ -1,3 +1,5 @@
+"""Sensor platform for Breville Joule integration."""
+
 from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -17,11 +19,15 @@ from .const import DOMAIN
 class BrevilleAuth:
     """Provide Breville authentication for simple username/password auth."""
 
-    def __init__(self, hass: HomeAssistant, username: str, password: str):
+    def __init__(
+        self, hass: HomeAssistant, username: str, password: str, polling_interval: int
+    ):
         """Initialize Breville Auth."""
         self.hass = hass
         self.username = username
         self.password = password
+        self.polling_interval = polling_interval
+        self.appliances = []
         self._access_token = None
         self._user_id = None
         self._ws = None
@@ -120,6 +126,7 @@ class BrevilleAuth:
                 appliances_data = await resp.json()
                 appliances = appliances_data.get("appliances", [])
                 for appliance in appliances:
+                    self.appliances.append(appliance)
                     if appliance["model"] == "BSV600":
                         add_appliance = {
                             "action": "addAppliance",
@@ -128,6 +135,7 @@ class BrevilleAuth:
                         ws.send(json.dumps(add_appliance))
 
         asyncio.create_task(self._async_ping(ws))
+        asyncio.create_task(self._async_poll(ws))
 
     async def _async_ping(self, ws):
         """Send ping messages to keep the WebSocket connection alive."""
@@ -137,6 +145,31 @@ class BrevilleAuth:
                 ws.send(json.dumps({"action": "ping"}))
             else:
                 break
+
+    async def _async_poll(self, ws):
+        """Send ping messages to keep the WebSocket connection alive."""
+        while True:
+            try:
+                await asyncio.sleep(self.polling_interval)
+                if ws.sock and ws.sock.connected:
+                    for appliance in self.appliances:
+                        # remove_appliance = {
+                        #    "action": "removeAppliance",
+                        #    "serialNumber": appliance["serialNumber"],
+                        # }
+                        # ws.send(json.dumps(remove_appliance))
+
+                        # await asyncio.sleep(0.5)
+
+                        add_appliance = {
+                            "action": "addAppliance",
+                            "serialNumber": appliance["serialNumber"],
+                        }
+                        ws.send(json.dumps(add_appliance))
+                else:
+                    break
+            except Exception as e:
+                print(f"Error handling SyncPoll message: {e}")
 
     async def _handle_websocket_message(self, message):
         """Handle incoming WebSocket messages."""
@@ -254,6 +287,10 @@ class BrevilleJouleSensor(SensorEntity):
         """Return the unit of measurement."""
         return "°C"
 
+    @property
+    def force_update(self):
+        return True
+
     def update_state(self, temperature, start_time=None, end_time=None):
         """Update the sensor state."""
         self._temperature = temperature
@@ -286,6 +323,10 @@ class BrevilleJouleStartTimeSensor(SensorEntity):
     def device_class(self):
         return SensorDeviceClass.TIMESTAMP
 
+    @property
+    def force_update(self):
+        return True
+
     def update_state(self, start_time=None):
         self._start_time = start_time
         self.async_write_ha_state()
@@ -313,6 +354,10 @@ class BrevilleJouleEndTimeSensor(SensorEntity):
     @property
     def device_class(self):
         return SensorDeviceClass.TIMESTAMP
+
+    @property
+    def force_update(self):
+        return True
 
     def update_state(self, end_time=None):
         self._end_time = end_time
@@ -346,6 +391,10 @@ class BrevilleJouleSetpointSensor(SensorEntity):
     def unit_of_measurement(self):
         return "°C"
 
+    @property
+    def force_update(self):
+        return True
+
     def update_state(self, setpoint=None):
         self._setpoint = setpoint
         self.async_write_ha_state()
@@ -369,6 +418,10 @@ class BrevilleJouleStateSensor(SensorEntity):
     @property
     def state(self):
         return self._state
+
+    @property
+    def force_update(self):
+        return True
 
     def update_state(self, has_timer=False):
         self._state = "active" if has_timer else "idle"

@@ -1,3 +1,5 @@
+"""The breville_joule integration."""
+
 from __future__ import annotations
 
 from homeassistant.config_entries import ConfigEntry
@@ -24,7 +26,9 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     username = config[DOMAIN].get("username")
     password = config[DOMAIN].get("password")
 
-    auth = BrevilleAuth(hass, username, password)
+    polling_interval = config[DOMAIN].get("polling_interval")
+
+    auth = BrevilleAuth(hass, username, password, polling_interval)
     hass.data[DOMAIN]["auth"] = auth
 
     hass.async_create_task(

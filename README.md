@@ -8,8 +8,7 @@ you need to have a "normal" password set. If you created your account with googl
 breville_joule:
   username: '<your email>'
   password: '<your pw>'
+  polling_interval: 30
 ```
-
-sorry, but the code quality is really bad :D
 
 some LLMs had to suffer during the creation of this plugin
