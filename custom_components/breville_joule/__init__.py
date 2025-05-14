@@ -6,7 +6,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import ConfigType
-
+from homeassistant.helpers.discovery import async_load_platform
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 
@@ -31,11 +31,11 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     auth = BrevilleAuth(hass, username, password, polling_interval)
     hass.data[DOMAIN]["auth"] = auth
 
+    
     hass.async_create_task(
-        hass.helpers.discovery.async_load_platform("sensor", DOMAIN, {}, config)
+        async_load_platform(hass, "sensor", DOMAIN, {}, config)
     )
     return True
-
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
