@@ -219,4 +219,147 @@ async def async_setup_platform(
         ]
     )
 
-# The sensor entity classes remain unchanged from your previous version, as they are structured well.
+class BrevilleJouleSensor(SensorEntity):
+    """Current temperature sensor."""
+
+    def __init__(self):
+        self._temperature = None
+
+    @property
+    def name(self):
+        return "Breville Joule"
+
+    @property
+    def state(self):
+        return self._temperature
+
+    @property
+    def device_class(self):
+        return SensorDeviceClass.TEMPERATURE
+
+    @property
+    def unit_of_measurement(self):
+        return "°C"
+
+    @property
+    def force_update(self):
+        return True
+
+    def update_state(self, temperature):
+        self._temperature = temperature
+        self.async_write_ha_state()
+
+    async def async_added_to_hass(self):
+        self.hass.data.setdefault(DOMAIN, {}).setdefault("entities", []).append(self)
+
+
+class BrevilleJouleStartTimeSensor(SensorEntity):
+    def __init__(self):
+        self._start_time = None
+
+    @property
+    def name(self):
+        return "Breville Joule Start Time"
+
+    @property
+    def state(self):
+        return self._start_time
+
+    @property
+    def device_class(self):
+        return SensorDeviceClass.TIMESTAMP
+
+    @property
+    def force_update(self):
+        return True
+
+    def update_state(self, start_time=None):
+        self._start_time = start_time
+        self.async_write_ha_state()
+
+    async def async_added_to_hass(self):
+        self.hass.data.setdefault(DOMAIN, {}).setdefault("entities", []).append(self)
+
+
+class BrevilleJouleEndTimeSensor(SensorEntity):
+    def __init__(self):
+        self._end_time = None
+
+    @property
+    def name(self):
+        return "Breville Joule End Time"
+
+    @property
+    def state(self):
+        return self._end_time
+
+    @property
+    def device_class(self):
+        return SensorDeviceClass.TIMESTAMP
+
+    @property
+    def force_update(self):
+        return True
+
+    def update_state(self, end_time=None):
+        self._end_time = end_time
+        self.async_write_ha_state()
+
+    async def async_added_to_hass(self):
+        self.hass.data.setdefault(DOMAIN, {}).setdefault("entities", []).append(self)
+
+
+class BrevilleJouleSetpointSensor(SensorEntity):
+    def __init__(self):
+        self._setpoint = None
+
+    @property
+    def name(self):
+        return "Breville Joule Setpoint"
+
+    @property
+    def state(self):
+        return self._setpoint
+
+    @property
+    def device_class(self):
+        return SensorDeviceClass.TEMPERATURE
+
+    @property
+    def unit_of_measurement(self):
+        return "°C"
+
+    @property
+    def force_update(self):
+        return True
+
+    def update_state(self, setpoint=None):
+        self._setpoint = setpoint
+        self.async_write_ha_state()
+
+    async def async_added_to_hass(self):
+        self.hass.data.setdefault(DOMAIN, {}).setdefault("entities", []).append(self)
+
+
+class BrevilleJouleStateSensor(SensorEntity):
+    def __init__(self):
+        self._state = "idle"
+
+    @property
+    def name(self):
+        return "Breville Joule State"
+
+    @property
+    def state(self):
+        return self._state
+
+    @property
+    def force_update(self):
+        return True
+
+    def update_state(self, has_timer=False):
+        self._state = "active" if has_timer else "idle"
+        self.async_write_ha_state()
+
+    async def async_added_to_hass(self):
+        self.hass.data.setdefault(DOMAIN, {}).setdefault("entities", []).append(self)
